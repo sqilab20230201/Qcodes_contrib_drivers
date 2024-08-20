@@ -7,14 +7,15 @@ import time
 import subprocess
 import platform
 import numpy as np
+import os
 
 from qcodes.instrument import VisaInstrument
 from qcodes.parameters import MultiParameter
 
-from qcodes_contrib_drivers.drivers.OxfordInstruments.Proteox._decsvisa.src.decs_visa_tools.decs_visa_settings import PORT
-from qcodes_contrib_drivers.drivers.OxfordInstruments.Proteox._decsvisa.src.decs_visa_tools.decs_visa_settings import HOST
-from qcodes_contrib_drivers.drivers.OxfordInstruments.Proteox._decsvisa.src.decs_visa_tools.decs_visa_settings import SHUTDOWN
-from qcodes_contrib_drivers.drivers.OxfordInstruments.Proteox._decsvisa.src.decs_visa_tools.decs_visa_settings import WRITE_DELIM
+from qcodes_contrib_drivers.drivers.OxfordInstruments._decsvisa.src.decs_visa_tools.decs_visa_settings import PORT
+from qcodes_contrib_drivers.drivers.OxfordInstruments._decsvisa.src.decs_visa_tools.decs_visa_settings import HOST
+from qcodes_contrib_drivers.drivers.OxfordInstruments._decsvisa.src.decs_visa_tools.decs_visa_settings import SHUTDOWN
+from qcodes_contrib_drivers.drivers.OxfordInstruments._decsvisa.src.decs_visa_tools.decs_visa_settings import WRITE_DELIM
 
 '''
 
@@ -27,7 +28,9 @@ from qcodes_contrib_drivers.drivers.OxfordInstruments.Proteox._decsvisa.src.decs
 #############################################
 
 # supply the file path from your working directory to the decs_visa.py file
-decs_visa_path = "../../src/qcodes_contrib_drivers/drivers/OxfordInstruments/_decsvisa/src/decs_visa.py"
+# decs_visa_path = "../../src/qcodes_contrib_drivers/drivers/OxfordInstruments/_decsvisa/src/decs_visa.py"
+decs_visa_path = os.path.normcase("_decsvisa/src/decs_visa.py")
+decs_visa_path = os.path.join(os.path.dirname(__file__), decs_visa_path)
 
 #############################################
 #    System configuration settings     #
@@ -141,6 +144,11 @@ class oiDECS(VisaInstrument):
     def __init__(self, name, **kwargs):
 
         running_on = platform.platform()
+        if os.path.isfile(decs_visa_path):
+            print(f"decs_visa_path: {decs_visa_path} is valid")
+        else:
+            print(f"decs_visa_path: {decs_visa_path} is invalid")
+            raise Exception("decs_visa_path is invalid")
         if running_on.startswith("Windows"):
             print(f"Running on {running_on} - start subprocess without PIPEd output")
             subprocess.Popen(["python", decs_visa_path])
