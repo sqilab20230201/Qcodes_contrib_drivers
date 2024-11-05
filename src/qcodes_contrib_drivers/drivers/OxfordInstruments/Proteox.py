@@ -84,7 +84,7 @@ class MagneticFieldParameters(MultiParameter):
             **kwargs,
         )
 
-    def get_raw(self) -> tuple[float, ...]:
+    def get_raw(self) -> tuple:
         """
         Gets the values of magnetic field from the instrument
         """
@@ -125,7 +125,7 @@ class MagnetCurrentParameters(MultiParameter):
             **kwargs,
         )
 
-    def get_raw(self) -> tuple[float, ...]:
+    def get_raw(self) -> tuple:
         """
         Gets the values of magnet current from the instrument
         """
@@ -387,59 +387,56 @@ class oiDECS(VisaInstrument):
 
     def set_magnet_target(self, coord, x, y, z, sweep_mode, sweep_rate, persist_on_completion):
         """Function to set field vector target"""
-        match sweep_mode:
-            case 'RATE':
-                param = [coord, x, y, z, 20, sweep_rate, persist_on_completion]
-                self._param_setter('set_MAG_TARGET', param)
-            case 'TIME':
-                param = [coord, x, y, z, 10, sweep_rate, persist_on_completion]
-                self._param_setter('set_MAG_TARGET', param)
-            case 'ASAP':
-                param = [coord, x, y, z, 0, sweep_rate, persist_on_completion]
-                self._param_setter('set_MAG_TARGET', param)
-            case _:
-                print('Incorrect inputs.')
-                print('[x,y,z,mode,rate,persist_on_completion]')
+        if sweep_mode == 'RATE':
+            param = [coord, x, y, z, 20, sweep_rate, persist_on_completion]
+            self._param_setter('set_MAG_TARGET', param)
+        elif sweep_mode == 'TIME':
+            param = [coord, x, y, z, 10, sweep_rate, persist_on_completion]
+            self._param_setter('set_MAG_TARGET', param)
+        elif sweep_mode == 'ASAP':
+            param = [coord, x, y, z, 0, sweep_rate, persist_on_completion]
+            self._param_setter('set_MAG_TARGET', param)
+        else:
+            print('Incorrect inputs.')
+            print('[x,y,z,mode,rate,persist_on_completion]')
 
 
     def set_output_current_target(self, x, y, z, sweep_mode, sweep_rate, persist_on_completion):
         """Function to set current vector target"""
-        match sweep_mode:
-            case 'RATE':
-                param = [x, y, z, 20, sweep_rate, persist_on_completion]
-                self._param_setter('set_CURR_TARGET', param)
-            case 'TIME':
-                param = [x, y, z, 10, sweep_rate, persist_on_completion]
-                self._param_setter('set_CURR_TARGET', param)
-            case 'ASAP':
-                param = [x, y, z, 0, sweep_rate, persist_on_completion]
-                self._param_setter('set_CURR_TARGET', param)
-            case _:
-                print('Incorrect inputs.')
-                print('[x,y,z,mode,rate,persist_on_completion]')
+        if sweep_mode == 'RATE':
+            param = [x, y, z, 20, sweep_rate, persist_on_completion]
+            self._param_setter('set_CURR_TARGET', param)
+        elif sweep_mode == 'TIME':
+            param = [x, y, z, 10, sweep_rate, persist_on_completion]
+            self._param_setter('set_CURR_TARGET', param)
+        elif sweep_mode == 'ASAP':
+            param = [x, y, z, 0, sweep_rate, persist_on_completion]
+            self._param_setter('set_CURR_TARGET', param)
+        else:
+            print('Incorrect inputs.')
+            print('[x,y,z,mode,rate,persist_on_completion]')
 
     def set_magnet_state(self, state):
         """Function to set VRM state target"""
-        match state:
-            case 0:
-                self._param_setter('set_MAG_STATE', state)
-                print('Holding Field')
-            case 10:
-                self._param_setter('set_MAG_STATE', state)
-                print('Entering Persistent Mode')
-            case 20:
-                self._param_setter('set_MAG_STATE', state)
-                print('Leaving Persistent Mode')
-            case 30:
-                self._param_setter('set_MAG_STATE', state)
-                print('Sweeping Field')
-            case 40:
-                self._param_setter('set_MAG_STATE', state)
-                print('Sweeping PSU Output')
-            case _:
-                print("**NB** Demandable states are:")
-                print("0 - Hold, 10 - Enter Persistent Mode")
-                print("20 - Leave Persistent Mode, 30 - Sweep Field, 40 - Sweep PSU Output")
+        if state == 0:
+            self._param_setter('set_MAG_STATE', state)
+            print('Holding Field')
+        elif state == 10:
+            self._param_setter('set_MAG_STATE', state)
+            print('Entering Persistent Mode')
+        elif state == 20:
+            self._param_setter('set_MAG_STATE', state)
+            print('Leaving Persistent Mode')
+        elif state == 30:
+            self._param_setter('set_MAG_STATE', state)
+            print('Sweeping Field')
+        elif state == 40:
+            self._param_setter('set_MAG_STATE', state)
+            print('Sweeping PSU Output')
+        else:
+            print("**NB** Demandable states are:")
+            print("0 - Hold, 10 - Enter Persistent Mode")
+            print("20 - Leave Persistent Mode, 30 - Sweep Field, 40 - Sweep PSU Output")
 
     def sweep_field(self):
         """VRM utility function"""
